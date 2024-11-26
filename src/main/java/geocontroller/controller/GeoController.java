@@ -24,6 +24,7 @@ public class GeoController {
     @GetMapping("/get-sunrise-and-sunset")
     public String getSunriseAndSunset(@RequestParam float latitude, float longitude) throws JsonProcessingException {
         SunriseResults testCoordinatesResults = SunriseSunsetDAO.requestData(latitude, longitude);
-        return testCoordinatesResults.sunriseResults().getFirst().toString();
+        return "Sunrise is at: "+testCoordinatesResults.results().sunrise()+
+                "\nSunset is: "+testCoordinatesResults.results().sunset();
     }
 }
