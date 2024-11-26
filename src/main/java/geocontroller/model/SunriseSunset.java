@@ -3,6 +3,5 @@ package geocontroller.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record CityCoordinates(float longitude, float latitude) {
+public record SunriseSunset (String sunrise, String sunset) {
 }
-
