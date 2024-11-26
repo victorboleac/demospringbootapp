@@ -10,7 +10,8 @@ public class GeocodingDAO {
     private static final String BASE_URL = "https://geocoding-api.open-meteo.com/v1/search";
 
     public static CoordinatesResults requestData(String cityName) throws JsonProcessingException {
-      WebClient webClient  = WebClient.builder().baseUrl(BASE_URL).build();
+
+        WebClient webClient  = WebClient.builder().baseUrl(BASE_URL).build();
 
       String responseBody;
       ObjectMapper mapper = new ObjectMapper();

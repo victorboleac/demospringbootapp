@@ -13,7 +13,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background-color: #f4f4f9;
         }
 
@@ -23,18 +23,22 @@
             background: #ffffff;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
+            width: 90%;
+            max-width: 400px;
         }
 
         h1 {
             color: #333333;
+            margin-bottom: 20px;
         }
 
         input {
             padding: 10px;
-            width: 70%;
+            width: 80%;
             margin: 10px 0;
             border: 1px solid #cccccc;
             border-radius: 4px;
+            font-size: 16px;
         }
 
         button {
@@ -43,6 +47,7 @@
             background-color: #007bff;
             border: none;
             border-radius: 4px;
+            font-size: 16px;
             cursor: pointer;
         }
 
@@ -52,8 +57,17 @@
 
         .result {
             margin-top: 20px;
-            font-size: 1.2em;
+            font-size: 1em;
             color: #555555;
+        }
+
+        .loading {
+            font-size: 1em;
+            color: #007bff;
+        }
+
+        .error {
+            color: #ff0000;
         }
     </style>
 </head>
@@ -62,6 +76,7 @@
     <h1>Get Sunrise and Sunset Times</h1>
     <input type="text" id="cityName" placeholder="Enter city name">
     <button onclick="getSunriseSunset()">Get Info</button>
+    <div class="loading" id="loading" style="display: none;">Loading...</div>
     <div class="result" id="result"></div>
 </div>
 
@@ -69,22 +84,35 @@
     async function getSunriseSunset() {
         const cityName = document.getElementById("cityName").value.trim();
         const resultDiv = document.getElementById("result");
+        const loadingDiv = document.getElementById("loading");
 
         if (!cityName) {
-            resultDiv.textContent = "Please enter a city name.";
+            resultDiv.innerHTML = `<span class="error">Please enter a city name.</span>`;
             return;
         }
 
+        resultDiv.innerHTML = "";
+        loadingDiv.style.display = "block"; // Show loading indicator
+
         try {
             const response = await fetch(`http://localhost:8080/api/v1/get-sunrise-and-sunset?cityName=${cityName}`);
+            loadingDiv.style.display = "none"; // Hide loading indicator
+
             if (response.ok) {
                 const data = await response.text();
-                resultDiv.textContent = data;
+                const [sunrise, sunset] = data.split(" Sunset: ");
+                resultDiv.innerHTML = `
+                    <p><strong>Sunrise:</strong> ${sunrise.replace("Sunrise: ", "")}</p>
+                    <p><strong>Sunset:</strong> ${sunset}</p>
+                `;
+            } else if (response.status === 404) {
+                resultDiv.innerHTML = `<span class="error">City not found. Please try another city.</span>`;
             } else {
-                resultDiv.textContent = "Failed to fetch data. Please try again.";
+                resultDiv.innerHTML = `<span class="error">Failed to fetch data. Please try again later.</span>`;
             }
         } catch (error) {
-            resultDiv.textContent = "Error: " + error.message;
+            loadingDiv.style.display = "none"; // Hide loading indicator
+            resultDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
         }
     }
 </script>
